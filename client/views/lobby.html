@@ -1,0 +1,214 @@
+<h2 class="w3-center w3-text-white" style="font-weight: bold;">LOBBY</h2>
+<div id="userList" class="w3-card">
+    <h2 class="w3-center">Players Online - {{playersOnline}}</h1>
+
+        <div class="w3-margin-top" id="players">
+            <ul class="w3-ul">
+                <li class="w3-bar w3-white w3-margin-bottom" ng-repeat="user in users">
+                    <span class=" w3-button  w3-large w3-right challengeButton" ng-click="challenge(user, $event)" ng-show="user.status != 'In game' && !isSameUser(user)">Challenge</span>
+                    <span class="w3-right thisIsYou" ng-show="isSameUser(user)">This is you</span>
+
+                    <div class=" loader loader-{{user.userData.id}}">
+                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                            width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                            <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                                <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                                <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                                <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                            </rect>
+                            <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                                <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"
+                                />
+                                <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"
+                                />
+                                <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" />
+                            </rect>
+                            <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                                <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"
+                                />
+                                <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"
+                                />
+                                <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" />
+                            </rect>
+                        </svg>
+                    </div>
+
+                    <img src="avatar.png" class="w3-bar-item w3-circle w3-hide-small" style="width:85px">
+                    <div class="w3-bar-item">
+                        <span class="w3-large playerUsername">{{user.userData.username}}</span>
+                        <br>
+                        <span>{{user.status}}</span>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+</div>
+
+<div id="chat" class="w3-card">
+    <h2 class="w3-center">Chat</h1>
+        <div class="w3-margin-top" id="messages">
+            <ul class="w3-ul">
+
+                <li class="message" ng-repeat="message in messages">
+                    <div class="w3-bar">
+                        <img src="avatar.png" class="w3-bar-item w3-circle msgAvatar">
+                        <div class="messageCont">
+                            <span class="username" ng-class="{ orange: message.username == loggedInUser.username }">{{message.username}}</span>
+                            <span class="date">{{message.time | date:"MM/dd/yy 'at' HH:mm"}}</span>
+                            <p class="msgText" ng-class="{ orange: message.username == loggedInUser.username }">{{message.msg}}</p>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+
+        <div id="messageAreaCont" class="w3-center">
+            <textarea class="w3-input w3-card w3-white" id="messageArea" my-enter="sendMessage()" ng-model="messageToSend"></textarea>
+        </div>
+</div>
+
+
+
+
+<h2 class="w3-center w3-text-white" style="font-weight: bold; padding-top: 10px; clear: both;">SCORES</h2>
+<div id="scores" class="w3-card">
+            
+    <div ng-show="!showPlayerGamesFlag">
+        <h2 class="w3-center w3-text-white">Leaderboard</h1>
+
+        <div style="height: 515px;" ng-show="loaderScoresFlag">
+            <div class="loaderLead">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                    <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                        <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                        <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                        <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                        <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"
+                        />
+                        <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"
+                        />
+                        <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                        <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"
+                        />
+                        <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"
+                        />
+                        <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+                </svg>
+            </div>
+        </div>
+
+        <div class="w3-margin-top" id="leaderboardPlayers" ng-show="!loaderScoresFlag">
+            <table class="w3-table-all w3-card-4 w3-centered">
+                <thead>
+                    <tr class="w3-orange w3-text-white tableHeading">
+                        <th class="t50">Player</th>
+                        <th class="t25">Games Won</th>
+                        <th class="t25">Games Lost</th>
+                    </tr>
+                </thead>
+                <tr ng-repeat="player in leaderBoardPlayers" class="leaderBoardPlayer pointer" ng-click="getPlayerGames(player._id, player.username)">
+                    <td>{{player.username}}</td>
+                    <td>{{player.gamesWon}}</td>
+                    <td>{{player.gamesLost}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div ng-show="showPlayerGamesFlag">
+        <h2 class="w3-center w3-text-white" style="position: relative"><i ng-click="goBackToLeaderboard()" class="fa fa-arrow-left" id="arrowBack"></i>{{playerGamesUsername}}</h1>
+        <div class="w3-margin-top" id="playerGames">
+
+            <h3>Games Won - {{userWonGames.length}}</h3>
+            <table class="w3-table-all w3-card-4 w3-centered" ng-show="userWonGames.length">
+                <thead>
+                    <tr class="w3-orange w3-text-white tableHeading">
+                        <th class="t50">Players</th>
+                        <th class="t25">Hits</th>
+                        <th class="t25">Time</th>
+                    </tr>
+                </thead>
+                <tr ng-repeat="game in userWonGames">
+                    <td>{{game.players}}</td>
+                    <td>{{game.hits}}{{game.forfeit? " (Forfeit)" : ""}}</td>
+                    <td>{{game.time | date:"MM/dd/yy HH:mm"}}</td>
+                </tr> 
+            </table>
+
+            <h3>Games Lost - {{userLostGames.length}}</h3>
+            <table class="w3-table-all w3-card-4 w3-centered" ng-show="userLostGames.length">
+                <thead>
+                    <tr class="w3-orange w3-text-white tableHeading">
+                        <th class="t50">Players</th>
+                        <th class="t25">Hits</th>
+                        <th class="t25">Time</th>
+                    </tr>
+                </thead>
+                <tr ng-repeat="game in userLostGames">
+                        <td>{{game.players}}</td>
+                        <td>{{game.hits}}{{game.forfeit? " (Forfeit)" : ""}}</td>
+                        <td>{{game.time | date:"MM/dd/yy HH:mm"}}</td>
+                    </tr> 
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<div id="snackbarChallenge" class="snackbar w3-card">
+    <span ng-show="!loaderSnackFlag">
+        <span style="color:orange;font-weight:bold;">{{userWhoChallenged.userData.username}}</span> challenged you to a game!</span>
+    <span ng-show="loaderSnackFlag">Waiting for the game to start!</span>
+    <br>
+    <div ng-show="!loaderSnackFlag">
+        <button class="w3-button snackBtn" ng-click="decline()">Decline</button>
+        <button class="w3-button snackBtn" ng-click="accept()">Accept</button>
+    </div>
+
+
+    <div class="loaderSnack" ng-show="loaderSnackFlag">
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+            <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
+            </rect>
+            <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"
+                />
+                <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"
+                />
+                <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" />
+            </rect>
+            <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"
+                />
+                <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"
+                />
+                <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" />
+            </rect>
+        </svg>
+    </div>
+
+</div>
+
+<div id="snackbarDeclined" class="snackbar w3-card">
+    <span style="color:orange;font-weight:bold;">{{userWhoDeclined}}</span> declined your challenge!
+</div>
+
+<!-- <div id="snackbarGameStart" class="snackbar w3-card" >
+    Game between you and<span style="color:orange;font-weight:bold;">{{userWhoDeclined}}</span> started! Set up your ships and click ready! accepted your challenge!
+</div> -->

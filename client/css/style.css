@@ -1,0 +1,510 @@
+/* GENERAL */
+@font-face {
+    font-family: "Play";
+    src: url("../fonts/Play-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Play Bold";
+    src: url("../fonts/Play-Bold.ttf");
+}
+
+body {
+    font-family: Play, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #00bbff;
+    background-image: url("../images/broken-noise.png");
+}
+
+#content {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1150px;
+}
+
+#title {
+    text-align: center;
+    font-size: 50px;
+    font-family: "Play Bold";
+    padding: 15px;
+    margin: 0;
+    margin-bottom: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    position: relative;
+}
+
+input,
+button {
+    outline: none;
+}
+
+button:active {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
+}
+/* END GENERAL */
+
+/* LOGIN & REGISTER FORMS */
+#form {
+    max-width: 600px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    margin-top: 40px;
+    font-size: 17px;
+}
+
+#formButton {
+    background: #ccc;
+    color: black;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    font-size: 20px;
+}
+
+#formButton:hover {
+    color: white !important;
+    background: orange !important;
+}
+
+.anotherAction:hover {
+    color: orange;
+}
+/* END LOGIN & REGISTER FORMS */
+
+/* BOARDS */
+.tile {
+    fill: black;
+    opacity: 0.5;
+    stroke: lightgrey;
+    stroke-width: 1;
+}
+
+.draggable {
+    cursor: move;
+}
+
+.tileData {
+    cursor: pointer;
+}
+
+.tileData:hover {
+    fill: green;
+}
+
+.textTile {
+    font-size: 20px;
+    cursor: default;
+    fill: orange;
+}
+
+.edgeTile {
+    opacity: 0.7;
+}
+
+.panel {
+    float: left;
+    width: 550px;
+}
+
+.panel h2 {
+    text-align: center;
+    font-family: "Play Bold";
+}
+
+#containerTargetingPanel {
+    margin-left: 50px;
+}
+/* END BOARDS */
+
+/* CLEARFIX */
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+/* END CLEARFIX */
+
+/* READY BUTTON */
+.gameButton {
+    outline: none;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    margin-top: 25px;
+    font-size: 18px;
+}
+
+.gameButton:hover {
+    color: black;
+}
+
+#forfeitButton{
+    margin-top: 10px;
+}
+/* END READY BUTTON */
+
+/* USERS ONLINE & CHAT */
+#userList,
+#chat {
+    float: left;
+    max-width: 570px;
+    width: 49.5%;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+}
+
+#chat {
+    margin-left: 1%;
+}
+
+#userList h2,
+#chat h2,
+#scores h2 {
+    margin: 0;
+}
+
+.challengeButton {
+    margin-top: 14px;
+    background-color: #ccc!important;
+}
+
+.challengeButton:hover {
+    color: white !important;
+    background-color: orange !important;
+}
+
+.playerUsername {
+    font-family: "Play Bold";
+}
+
+.challengeButton:active {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
+}
+
+#players,
+#messages {
+    height: 600px;
+    overflow: auto;
+    padding: 0 5px;
+}
+
+#messages {
+    height: 470px;
+}
+
+.message {
+    border: none !important;
+    color: white;
+    padding: 0 !important;
+}
+
+.message:last-child {
+    margin-bottom: 0px;
+}
+
+#messageArea {
+    outline: none;
+    background: rgba(255, 255, 255, 0);
+    padding: 4px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    height: 110px;
+    box-shadow: none;
+}
+
+#messageArea:focus {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.username {
+    font-weight: bold;
+    font-size: 19px;
+}
+
+#messageAreaCont {
+    margin-top: 20px;
+}
+
+.messageCont {
+    max-width: 462px;
+    width: 100%;
+    float: left;
+    margin-top: 7px;
+    padding: 0;
+    padding-bottom: 10px;
+}
+
+.msgAvatar {
+    width: 40px !important;
+    padding: 0 !important;
+    float: left;
+    margin-top: 13px;
+    margin-right: 10px;
+}
+
+.msgText {
+    margin: 0;
+    padding: 0;
+}
+/* END USERS ONLINE & CHAT */
+
+/* USER/LOGOUT */
+#userShow {
+    position: absolute;
+    right: 50px;
+    top: 40px;
+    font-size: 17px;
+}
+
+#username {
+    color: orange;
+    margin-right: 7px;
+    font-size: 20px;
+}
+
+#logout {
+    cursor: pointer;
+    padding: 10px;
+}
+
+#logout:hover {
+    color: lightgray;
+}
+
+.orange {
+    color: orange;
+}
+/* END USER/LOGOUT */
+
+/* SNACKBAR*/
+.snackbar, .snackbarMsg {
+    visibility: hidden;
+    width: 300px;
+    margin-left: -150px;
+    background-color: rgba(51,51,51, 0.8);
+    
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+}
+
+.snackbar.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s;
+    animation: fadein 0.5s;
+}
+
+.snackbarMsg.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
+}
+
+@keyframes fadein {
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadeout {
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
+}
+
+@keyframes fadeout {
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
+}
+
+.snackBtn {
+    background-color: #ccc!important;
+    color: black;
+    margin: 7px;
+    margin-top: 14px;
+}
+
+.snackBtn:hover {
+    color: white !important;
+    background-color: orange !important;
+}
+
+.snackBtn:active {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
+}
+/* END SNACKBAR */
+
+/* MEDIA QUERIES */
+@media (max-width:1150px) {
+    .messageCont {
+        float: none;
+    }
+}
+
+@media (max-width:800px) {
+    #userList,
+    #chat {
+        width: 90%;
+        max-width: none;
+        margin-right: 5%;
+        margin-left: 5%;
+        margin-bottom: 20px;
+        float: none;
+    }
+    .messageCont {
+        max-width: none;
+    }
+}
+/* END MEDIA QUERIES */
+
+
+.loader{
+    height: 40px;
+    width: 60px;
+    float: right;
+    margin-top: 20px;
+    display: none;
+  }
+
+  .loaderSnack{
+    height: 40px;
+    width: 60px;
+    margin: 0 auto;
+    margin-top: 22px;
+  }
+ 
+  .loaderSnack svg path,
+  .loaderSnack svg rect,
+  .loaderLead svg path,
+  .loaderLead svg rect{
+    fill: orange;
+  }
+
+  .loaderLead{
+    height: 40px;
+    width: 24px;
+    margin: 0 auto;
+    margin-top: 100px;
+  }
+  
+  /*
+    Set the color of the icon
+  */
+  .loader svg path,
+  .loader svg rect{
+    fill: #FF6700;
+  }
+
+  .thisIsYou{
+      margin-top: 22px;
+      margin-right: 5px;
+      font-size: 17px;
+      font-weight: bold;
+      color: orange;
+  }
+
+  #gameStatusMsg{
+      padding: 15px;
+      font-size: 18px;
+      color: white;
+      text-align: center;
+  }
+
+  .tileHitRed{
+      fill: red ;
+  }
+
+  .tileMissBlue{
+    fill: lightblue ;
+}
+
+  
+/*LEADERBOARD */
+#scores{
+    max-width: 1140px;
+    width: 100%;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    font-size: 18px;
+    margin-bottom: 30px;
+
+}
+
+.t50{
+    width: 50%;
+
+}
+
+.t25{
+    width: 25%;
+}
+
+.tableHeading{
+    font-size: 19px;
+}
+
+.pointer{
+    cursor: pointer;
+}
+
+#leaderboardPlayers, #playerGames {
+    height: 600px;
+    overflow: auto;
+    padding: 0 5px;
+}
+
+#playerGames h3{
+    color: white;
+    text-align: center;
+}
+
+#arrowBack{
+    position: absolute;
+    left: 0;
+    cursor: pointer;
+    padding: 5px;
+    width: 40px;
+    top: 1px;
+  }
+
+  #arrowBack:hover{
+      color: orange;
+    
+  }
+
+ .leaderBoardPlayer:hover{
+    color: white;
+    background: rgb(190, 190, 190) !important;
+ }

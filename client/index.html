@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Battleship</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.min.js"></script>
+    <script src="scripts/snap.svg-min.js"></script>
+</head>
+
+<body>
+    <div id="content" ng-app="myApp" ng-controller="mainController">
+        <h1 id="title" class="w3-block">Starship Battle
+            <span id="userShow" ng-show="isLoggedIn">
+                <span id="username">{{username}}</span>
+                <span id="logout" ng-click="logout()">Logout</span>
+            </span>
+        </h1>
+            <ng-view></ng-view>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/jwt-decode/jwt-decode.js"></script>
+
+
+    <script type="text/javascript" src="scripts/app.js"></script>
+    <script type="text/javascript" src="scripts/services/authService.js"></script>
+    <script type="text/javascript" src="scripts/controllers/main.js"></script>
+    <script type="text/javascript" src="scripts/controllers/login.js"></script>
+    <script type="text/javascript" src="scripts/controllers/register.js"></script>
+    <script type="text/javascript" src="scripts/controllers/lobby.js"></script>
+    <script type="text/javascript" src="scripts/controllers/game.js"></script>
+</body>
+
+</html>

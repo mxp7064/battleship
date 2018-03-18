@@ -1,0 +1,27 @@
+<div class="w3-modal-content w3-card-4 w3-animate-zoom " id="form">
+    <h1 class="w3-center w3-padding">Login</h1>
+    <form ng-submit="submit()" class="w3-container">
+        <div class="w3-section w3-margin-bottom w3-margin-top">
+            <label>
+                <b>Username</b>
+            </label>
+            <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.username" type="text" placeholder="Enter Username" name="username"
+                required>
+            <label>
+                <b>Password</b>
+            </label>
+            <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.password" type="password" placeholder="Enter Password" name="password"
+                required>
+            <button class="w3-button w3-block " id="formButton" type="submit">Login</button>
+
+        </div>
+    </form>
+
+    <div class="w3-container w3-border-top w3-padding-16 ">
+
+        <div class="w3-center w3-padding w3-hide-small">Don't have an account?
+            <a ng-href="#/register" class="anotherAction">Register</a>
+        </div>
+    </div>
+
+</div>

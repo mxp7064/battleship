@@ -1,0 +1,21 @@
+<div id="boards" class="clearfix">
+    <div id="containerPlayerPanel" class="panel">
+        <h2>You</h2>
+        <svg id="playerPanel" version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" width="550" height="550" class="w3-card-4"></svg>
+    </div>
+    
+    <div id="containerTargetingPanel" class="panel">
+        <h2>{{ enemyPlayer }}</h2>
+        <svg id="targetingPanel" version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" width="550" height="550" class="w3-card-4"></svg>
+    </div>
+</div>
+
+<button ng-click="ready()" ng-show="readyFlag" class="gameButton w3-center w3-button w3-block">Ready</button>
+<button ng-click="forfeit()" id="forfeitButton" class="gameButton w3-center w3-button w3-block">Forfeit</button>
+
+<div id="gameStatusMsg">{{gameStatusMsg}}</div>
+
+<div id="snackBar" class="snackbarMsg w3-card" >
+    {{snackBarMessage}}
+</div>
+
