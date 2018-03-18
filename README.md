@@ -5,7 +5,7 @@ In terminal run mongod command to create a new mongo database
 
 mongod --dbpath path
 
-where path is the /db folder you created
+where path is the absolute path to the /db folder you created
 
 In terminal go to the battleship folder and run:
 
