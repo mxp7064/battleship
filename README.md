@@ -7,6 +7,10 @@ mongod --dbpath path
 
 where path is the absolute path to the /db folder you created
 
+In terminal run:
+
+npm install
+
 In terminal go to the battleship folder and run:
 
 node index.js
