@@ -23,11 +23,11 @@ node index.js
 
 TEST THE APP:
 
-In your browser go to:
+Open 2 different browsers (for example Chrome and Firefox) and in both of them go to:
 
-localhost:3000
+http://localhost:3000/
 
-Create (register) 2 new users (user different browsers)
+Create (register) 2 new users (in different browsers)
 
 Login with them, you will be presented with a Lobby, you can test the chat there
 
