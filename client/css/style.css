@@ -508,3 +508,8 @@ button:active {
     color: white;
     background: rgb(190, 190, 190) !important;
  }
+
+ .validationError{
+     color: red;
+     margin-left: 10px;
+ }

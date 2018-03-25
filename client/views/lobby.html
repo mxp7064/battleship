@@ -5,7 +5,7 @@
         <div class="w3-margin-top" id="players">
             <ul class="w3-ul">
                 <li class="w3-bar w3-white w3-margin-bottom" ng-repeat="user in users">
-                    <span class=" w3-button  w3-large w3-right challengeButton" ng-click="challenge(user, $event)" ng-show="user.status != 'In game' && !isSameUser(user)">Challenge</span>
+                    <span class=" w3-button  w3-large w3-right challengeButton" ng-click="challenge(user, $event)" ng-show="user.status != 'In game' && user.status != 'Challenged' &&!isSameUser(user)">Challenge</span>
                     <span class="w3-right thisIsYou" ng-show="isSameUser(user)">This is you</span>
 
                     <div class=" loader loader-{{user.userData.id}}">
@@ -207,6 +207,10 @@
 
 <div id="snackbarDeclined" class="snackbar w3-card">
     <span style="color:orange;font-weight:bold;">{{userWhoDeclined}}</span> declined your challenge!
+</div>
+
+<div id="snackbarChallengeTimeout" class="snackbar w3-card">
+    Challenge timeout, player didn't accept your challenge!
 </div>
 
 <!-- <div id="snackbarGameStart" class="snackbar w3-card" >

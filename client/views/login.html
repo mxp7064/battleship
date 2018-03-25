@@ -1,19 +1,20 @@
 <div class="w3-modal-content w3-card-4 w3-animate-zoom " id="form">
     <h1 class="w3-center w3-padding">Login</h1>
-    <form ng-submit="submit()" class="w3-container">
+    <form ng-submit="submit()" class="w3-container" name="loginForm" novalidate>
         <div class="w3-section w3-margin-bottom w3-margin-top">
-            <label>
-                <b>Username</b>
-            </label>
-            <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.username" type="text" placeholder="Enter Username" name="username"
-                required>
-            <label>
-                <b>Password</b>
-            </label>
-            <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.password" type="password" placeholder="Enter Password" name="password"
-                required>
-            <button class="w3-button w3-block " id="formButton" type="submit">Login</button>
+            <label> <b>Username</b> </label>
+            <span class="validationError" ng-show="loginForm.username.$dirty && loginForm.username.$invalid">
+                <span ng-show="loginForm.username.$error.required">Username is required.</span>
+            </span>
+            <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.username" type="text" placeholder="Enter Username" name="username" required>
 
+            <label> <b>Password</b> </label>
+            <span class="validationError" ng-show="loginForm.password.$dirty && loginForm.password.$invalid">
+                <span ng-show="loginForm.password.$error.required">Password is required.</span>
+            </span>
+            <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.password" type="password" placeholder="Enter Password" name="password" required>
+
+            <input ng-disabled="loginForm.$invalid" class="w3-button w3-block " id="formButton" type="submit" value="Login">
         </div>
     </form>
 

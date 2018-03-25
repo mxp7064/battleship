@@ -1,6 +1,9 @@
 
 var User = require("./models/user");
 var bcrypt = require("bcrypt");
+const { check, validationResult } = require('express-validator/check');
+const { matchedData, sanitize } = require('express-validator/filter');
+
 module.exports = function (jwt, router) {
     var mongoose = require("mongoose");
     mongoose.connect("mongodb://localhost/Battleship");
@@ -14,119 +17,119 @@ module.exports = function (jwt, router) {
         console.log("connection open!");
     });
 
-    
-    router.post('/register', (req, res, next) => {
+    router.post('/register', [
+        check('email')
+            .exists().withMessage("Email is required")
+            .isEmail().withMessage('Invalid email address')
+            .trim()
+            .normalizeEmail(),
+
+        check('username')
+            .exists().withMessage("Username is required")
+            .isLength({ min: 5 }).withMessage("Username must be at least 5 characters long")
+            .isLength({ max: 20 }).withMessage("Username must be less than 20 characters long")
+            .trim(),
+
+        check('password')
+            .exists().withMessage("Password is required")
+            .isLength({ min: 5 }).withMessage("Password must be at least 5 characters long")
+            .isLength({ max: 20 }).withMessage("Password must be less than 20 characters long")
+            .trim(),
+
+        sanitize("username").escape()
+
+    ], (req, res, next) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.mapped() });
+        }
+
         var email = req.body.email;
         var username = req.body.username;
         var password = req.body.password;
 
-        if (email && username && password) {
-            User.findOne({ username: username }).exec(function (err, user) {
-                if (err) {
-                    var err = new Error("Internal server error");
-                    err.status = 500;
-                    return next(err);
-                } else if (user) {
-                    var err = new Error('username taken');
-                    err.status = 401;
-                    return next(err);
-                }
-                else if (!user) {
-                    User.findOne({ email: email }).exec(function (err, user) {
-                        if (err) {
-                            //var err = new Error("Internal server error");
-                            err.status = 500;
-                            return next(err);
-                        } else if (user) {
-                            //var err = new Error('account associated with that email already exists');
-                            err.status = 409;
-                            return next(err);
+        User.findOne({ username: username }).exec(function (err, user) {
+            if (err) {
+                var err = new Error("Internal server error");
+                err.status = 500;
+                return next(err);
+            } else if (user) {
+                return res.status(401).json({ msg: "Username taken" });
+            }
+            else if (!user) {
+                User.findOne({ email: email }).exec(function (err, user) {
+                    if (err) {
+                        var err = new Error("Internal server error");
+                        err.status = 500;
+                        return next(err);
+                    } else if (user) {
+                        return res.status(409).json({ msg: "Account associated with that email already exists" });
+                    }
+                    else if (!user) {
+                        var userData = {
+                            email: email,
+                            username: username,
+                            password: password,
+                            gamesWon: 0,
+                            gamesLost: 0
                         }
-                        else if (!user) {
-                            var userData = {
-                                email: email,
-                                username: username,
-                                password: password,
-                                gamesWon: 0,
-                                gamesLost: 0
+                        User.create(userData, function (err, user) {
+                            if (err) {
+                                console.log(err)//logaj ovake errore
+                                var err = new Error("Internal server error");
+                                err.status = 500;
+                                return next(err);
+                            } else {
+                                res.json({ registerSuccessfull: true });
                             }
-                            User.create(userData, function (err, user) {
-                                if (err) {
-                                    //var err = new Error("Internal server error");
-                                    err.status = 500;
-                                    return next(err);
-                                } else {
-                                    /* var token = jwt.sign({ username: userData.username }, secret, { expiresIn: '1h' });
-                                    res.json({ token: token }); */
-                                    res.json({ registerSuccessfull: true }); 
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
-        else {
-            //var err = new Error("Request data missing");
-            err.status = 400;
-            return next(err);
-        }
+                        });
+                    }
+                });
+            }
+        });
+
     });
 
+    router.post('/login', [
+        check("username")
+            .exists().withMessage("Username is required"),
 
-    router.post('/login', (req, res, next) => {
+        check('password')
+            .exists().withMessage("Password is required")
+
+    ], (req, res, next) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.mapped() });
+        }
+
         var username = req.body.username;
         var password = req.body.password;
-    
-        if (username && password) {
-            User.findOne({ username: username }).exec(function (err, user) {
-                if (err) {
-                    //var err = new Error("Internal server error");
-                    err.status = 500;
-                    return next(err);
-                } else if (!user) {
-                    //var err = new Error('username or password wrong');//no user with that username
-                    err.status = 401;
-                    return next(err);
+
+        User.findOne({ username: username }).exec(function (err, user) {
+            if (err) {
+                var err = new Error("Internal server error");
+                err.status = 500;
+                return next(err);
+            } else if (!user) {
+                //actually: no user with that username (wrong username)
+                return res.status(401).json({ msg: "Username or password wrong" });
+            }
+            bcrypt.compare(password, user.password, function (err, result) {
+                if (result === true) {
+                    var data = { username: user.username, id: user._id };
+                    var token = jwt.sign(data, "najvecatajnanasvijetu", { expiresIn: '1h' });
+                    res.json({ token: token });
+                } else {
+                    //actually: wrong password
+                    return res.status(401).json({ msg: "Username or password wrong" });
                 }
-                bcrypt.compare(password, user.password, function (err, result) {
-                    if (result === true) {
-                        var data = { username: user.username, id: user._id };
-                        var token = jwt.sign(data, "najvecatajnanasvijetu", { expiresIn: '1h' });
-                        res.json({ token: token });
-                    } else {
-                        //var err = new Error('username or password wrong');//wrong password
-                        err.status = 401;
-                        return next(err);
-                    }
-                })
-            });
-        }
-        else {
-            //var err = new Error("Request data missing");
-            err.status = 400;
-            return next(err);
-        }
+            })
+        });
+
     });
-
-    /* router.post('/login', function (req, res) {
-
-        // TODO: validate the actual user user
-        var profile = {
-            first_name: 'John',
-            last_name: 'Doe',
-            email: 'john@doe.com',
-            id: 123
-        };
-
-        //napravi na nacin da jedino ako je user uspjesno authenticated da mu returnas token, otherwise hendlaj
-
-        // we are sending the profile in the token
-        var token = jwt.sign(profile, secret, { expiresIn: '1h' });
-
-        res.json({ token: token });
-    }); */
-
 
     return router;
 }

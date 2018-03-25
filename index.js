@@ -13,6 +13,9 @@ var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+const expressValidator = require('express-validator');
+app.use(expressValidator());
+
 //serve client files so they are available to the client and handle get requests by serving the index.html file
 app.use(express.static(__dirname + '/client'));
 const path = require('path');

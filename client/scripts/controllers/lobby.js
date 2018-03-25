@@ -36,10 +36,33 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
-        $scope.socket.on('usersChanged', function (users) {
+        //ADD USER
+        $scope.socket.on('userAdded', function (user) {
             $scope.$apply(function () {
-                $scope.users = users;
+                $scope.users.push(user);
                 $scope.playersOnline = $scope.users.length;
+            });
+        });
+
+        //REMOVE USER
+        $scope.socket.on('userRemoved', function (socketID) {
+            $scope.$apply(function () {
+                var index = $scope.users.findIndex(function (u) {
+                    return u.socketID == socketID;
+                })
+                if (index !== -1) $scope.users.splice(index, 1);
+
+                $scope.playersOnline = $scope.users.length;
+            });
+        });
+
+        //CHANGE STATUS
+        $scope.socket.on('usersStatusChanged', function (users) {
+            $scope.$apply(function () {
+                for(var i = 0; i < users.length; i++)
+                {
+                    $scope.users[i].status = users[i].status;
+                }
             });
         });
 
@@ -86,6 +109,25 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             $scope.$apply(function () {
                 $scope.userWhoChallenged = user;
             });
+        });
+
+        $scope.socket.on('challenge timeout', function () {
+            console.log("challenge timeout");
+            $scope.$apply(function () {
+                $(".challengeButton").css("display", "block");
+                $(".challengeButton").css("pointer-events", "auto");
+                $(".loader").css("display", "none");
+
+                showSnackBar("snackbarChallengeTimeout");
+                setTimeout(() => {
+                    removeSnackBar("snackbarChallengeTimeout");
+                }, 3000);
+            });
+        });
+
+        $scope.socket.on('challenged timeout', function () {
+            console.log("challenged timeout");
+            removeSnackBar("snackbarChallenge");
         });
 
         $scope.socket.on('game prestart', function (gameID, player1, player2) {
@@ -154,7 +196,7 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
         $($event.currentTarget).css("display", "none");
         $(".challengeButton").css("pointer-events", "none");
         $(".loader-" + user.userData.id).css("display", "inline-block");
-        $scope.socket.emit('challenge', Auth.getUser(), user);
+        $scope.socket.emit('challenge', Auth.getUser().id, user.userData.id);
     }
 
     $scope.isSameUser = function (user) {

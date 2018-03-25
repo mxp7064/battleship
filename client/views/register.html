@@ -1,25 +1,32 @@
 <div class="w3-modal-content w3-card-4 w3-animate-zoom " id="form">
     <h1 class="w3-center w3-padding">Register</h1>
-    <form  ng-submit="submit()" class="w3-container" >
+    <form ng-submit="submit()" class="w3-container" name="registerForm" novalidate>
         <div class="w3-section w3-margin-bottom w3-margin-top">
-            <label>
-                <b>Email</b>
-            </label>
-            <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.email" type="email" placeholder="Enter Email" name="email"
-                required>
-            <label>
-                <label>
-                    <b>Username</b>
-                </label>
-                <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.username" type="text" placeholder="Enter Username" name="username"
-                    required>
-                <label>
-                    <b>Password</b>
-                </label>
-                <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.password" type="password" placeholder="Enter Password" name="password"
-                    required>
-                <button class="w3-button w3-block " id="formButton" type="submit">Register</button>
+            <label> <b>Email</b> </label>
+            <span class="validationError" ng-show="registerForm.email.$dirty && registerForm.email.$invalid">
+                <span ng-show="registerForm.email.$error.required">Email is required.</span>
+                <span ng-show="registerForm.email.$error.email">Invalid email address.</span>
+            </span>
+            <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.email" type="email" placeholder="Enter Email" name="email" required>
+            
+            <label> <b>Username</b> </label>
+            <span class="validationError" ng-show="registerForm.username.$dirty && registerForm.username.$invalid">
+                <span ng-show="registerForm.username.$error.required">Username is required.</span>
+                <span ng-show="registerForm.username.$error.minlength">Username must be at least 5 characters long.</span>
+                <span ng-show="registerForm.username.$error.maxlength">Username must be less than 20 characters long.</span>
+            </span>
+            <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.username" type="text" placeholder="Enter Username" name="username" ng-minlength="5" ng-maxlength="20" required >
 
+            <label> <b>Password</b> </label>
+            <span class="validationError" ng-show="registerForm.password.$dirty && registerForm.password.$invalid">
+                <span ng-show="registerForm.password.$error.required">Password is required.</span>
+                <span ng-show="registerForm.password.$error.minlength">Password must be at least 5 characters long.</span>
+                <span ng-show="registerForm.password.$error.maxlength">Password must be less than 20 characters long.</span>
+            </span>
+            <input class="w3-input w3-border w3-margin-bottom w3-margin-top" ng-model="user.password" type="password" placeholder="Enter Password" name="password" ng-minlength="5" ng-maxlength="20" required>
+
+            <input ng-disabled="registerForm.$invalid" class="w3-button w3-block " id="formButton" type="submit" value="Register">
+            
         </div>
     </form>
 

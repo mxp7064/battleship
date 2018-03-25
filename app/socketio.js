@@ -33,7 +33,8 @@ module.exports = function (io, jwt) {
             status: "In lobby"
         };
         users.push(user);
-        io.sockets.emit('usersChanged', users);
+        
+        io.sockets.emit('userAdded', user);//add user
 
         socket.on('disconnect', function () {
             console.log('user disconnected');
@@ -41,7 +42,7 @@ module.exports = function (io, jwt) {
                 return u.socketID == socket.id;
             })
             if (index !== -1) users.splice(index, 1);
-            socket.broadcast.emit('usersChanged', users);
+            socket.broadcast.emit('userRemoved', socket.id);//remove user
         });
 
         //SEND CHAT MESSAGES TO THE CLIENT
@@ -115,8 +116,27 @@ module.exports = function (io, jwt) {
         });
 
         //CHALLENGE
-        socket.on('challenge', function (userWhoChalleneged, challengedUser) {
-            socket.to(challengedUser.socketID).emit('you are challenged', users.find(u => u.userData.id === userWhoChalleneged.id));
+        socket.on('challenge', function (userWhoChallenegedID, challengedUserID) {
+            var userWhoChalleneged = users.find(u => u.userData.id === userWhoChallenegedID);
+            var challengedUser = users.find(u => u.userData.id === challengedUserID);
+
+            userWhoChalleneged.status = "Challenged";
+            challengedUser.status = "Challenged";
+            
+            io.sockets.emit('usersStatusChanged', users);//change status
+
+            socket.to(challengedUser.socketID).emit('you are challenged', userWhoChalleneged);
+            setTimeout(function(){
+                socket.emit("challenge timeout");
+                socket.to(challengedUser.socketID).emit("challenged timeout");
+                if(userWhoChalleneged.status != "In game")
+                {
+                    userWhoChalleneged.status = "In lobby";
+                    challengedUser.status = "In lobby";
+                    io.sockets.emit('usersStatusChanged', users);//change status
+                }
+                
+            }, 10000);
         });
 
         //ACCEPT CHALLENGE
@@ -127,7 +147,7 @@ module.exports = function (io, jwt) {
             var player2 = findUser(userWhoChalleneged.socketID);
             player2.status = "In game";
 
-            io.sockets.emit('usersChanged', users);
+            io.sockets.emit('usersStatusChanged', users);//change status
 
             var gameID = player1.userData.id + '_' + player2.userData.id;
 
@@ -184,7 +204,7 @@ module.exports = function (io, jwt) {
 
                     game.winner.status = "In lobby";
                     game.loser.status = "In lobby";
-                    io.sockets.emit('usersChanged', users);
+                    io.sockets.emit('usersStatusChanged', users);//change status
 
                     User.findByIdAndUpdate(game.loser.userData.id, { $inc: { gamesLost: 1 } }, function (err, data) {
                         if (err) console.log(err);
@@ -236,7 +256,7 @@ module.exports = function (io, jwt) {
 
             game.winner.status = "In lobby";
             game.loser.status = "In lobby";
-            io.sockets.emit('usersChanged', users);
+            io.sockets.emit('usersStatusChanged', users);//change status
 
             User.findByIdAndUpdate(game.loser.userData.id, { $inc: { gamesLost: 1 } }, function (err, data) {
                 if (err) console.log(err);

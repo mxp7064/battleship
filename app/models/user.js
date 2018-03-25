@@ -16,11 +16,15 @@ var UserSchema = new mongoose.Schema({
         type: String,
         unique: true,
         required: true,
-        trim: true
+        trim: true,
+        minlength: 5,
+        maxlength: 20
     },
     password: {
         type: String,
         required: true,
+        minlength: 5,
+        maxlength: 20
     },
     gamesWon: {
         type: Number
