@@ -8,7 +8,7 @@ module.exports = function (jwt, router) {
     var mongoose = require("mongoose");
     //mongoose.connect("mongodb://localhost/Battleship");
     mongoose.connect(process.env.PROD_MONGODB);
-
+    console.log(process.env.PROD_MONGODB);
     var db = mongoose.connection;
 
     db.on("error", function () {
