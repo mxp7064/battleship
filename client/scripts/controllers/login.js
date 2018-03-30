@@ -1,6 +1,6 @@
 app.controller('loginController', function ($scope, $http, Auth, $location) {
     $scope.submit = function () {
-        $http.post('http://localhost:3000/api/login', $scope.user).then(function (res) {
+        $http.post('https://battleshipweb123.herokuapp.com/api/login', $scope.user).then(function (res) {
 
             var token = res.data.token;
             localStorage.setItem("token", token);

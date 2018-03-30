@@ -1,7 +1,7 @@
 app.controller('registerController', function ($scope, $http, Auth, $location) {
 
     $scope.submit = function () {
-        $http.post('http://localhost:3000/api/register', $scope.user).then(function (res) {
+        $http.post('https://battleshipweb123.herokuapp.com/api/register', $scope.user).then(function (res) {
             if (res.data.registerSuccessfull) {
                 alert("Register successful!");
                 $location.path("/login");

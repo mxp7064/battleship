@@ -15,7 +15,7 @@ app.factory('Auth', function () {
             return (user) ? user : false;
         },
         setSocket: function(){
-            socket = io.connect('http://localhost:3000', {
+            socket = io.connect('https://battleshipweb123.herokuapp.com', {
                 query: 'token=' + localStorage.getItem("token")
             });
         },
