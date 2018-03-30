@@ -1,6 +1,6 @@
 app.controller('loginController', function ($scope, $http, Auth, $location) {
     $scope.submit = function () {
-        $http.post(process.env.HOST_URL + "/api/login", $scope.user).then(function (res) {
+        $http.post(API_URL + "/api/login", $scope.user).then(function (res) {
 
             var token = res.data.token;
             localStorage.setItem("token", token);

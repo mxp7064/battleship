@@ -16,6 +16,16 @@ app.use(bodyParser.json());
 const expressValidator = require('express-validator');
 app.use(expressValidator());
 
+const PORT = process.env.PORT || 3000;
+
+//serve envirnment variables to the client
+const fs = require('fs');
+fs.writeFileSync(
+    __dirname + '/config/env.js',
+    'var API_URL = ' + process.env.API_URL || "http://localhost:" + PORT + ';'
+);
+app.use(express.static(__dirname + '/config'));
+
 //serve client files so they are available to the client and handle get requests by serving the index.html file
 app.use(express.static(__dirname + '/client'));
 const path = require('path');
@@ -36,6 +46,6 @@ app.use(function (err, req, res, next) {
 
 
 
-http.listen(process.env.PORT || 3000, function () {
+http.listen(PORT, function () {
     console.log('listening on');
 });

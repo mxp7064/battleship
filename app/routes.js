@@ -6,8 +6,8 @@ const { matchedData, sanitize } = require('express-validator/filter');
 
 module.exports = function (jwt, router) {
     var mongoose = require("mongoose");
-    mongoose.connect(process.env.PROD_MONGODB );//|| "mongodb://localhost/Battleship"
     console.log(process.env.PROD_MONGODB);
+    mongoose.connect(process.env.PROD_MONGODB || "mongodb://localhost/battleship");
     var db = mongoose.connection;
 
     db.on("error", function () {
