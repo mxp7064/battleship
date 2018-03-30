@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 3000;
 //serve envirnment variables to the client
 const fs = require('fs');
 fs.writeFileSync(
-    __dirname + '/config/env.js',
+    __dirname + 'app/config/env.js',
     'var API_URL = ' + process.env.API_URL || "http://localhost:" + PORT + ';'
 );
 app.use(express.static(__dirname + '/config'));
