@@ -1,1 +1,1 @@
-var API_URL = undefined
+var API_URL = "http://localhost:5000";
