@@ -1,5 +1,7 @@
+//Player enum
 Player = Object.freeze({ "player1": 1, "player2": 2 });
 
+//Game class representing the actual game
 class Game {
     constructor(gameID, player1, player2) {
         this.gameID = gameID;
@@ -15,6 +17,7 @@ class Game {
         this.forfeit = false;
     }
 
+    //return game summary which will be stored in the database
     gameSummary()
     {
         return {
@@ -28,6 +31,7 @@ class Game {
         };
     }
 
+    //check if given ships are sunk
     checkAreAllSunk(ships)
     {
         var i;
@@ -41,6 +45,7 @@ class Game {
         return true;
     }
 
+    //check is the win condition fulfiled
     isWin(){
         if (this.turn == Player.player1) {
             if(this.checkAreAllSunk(this.player2Ships)){
@@ -60,9 +65,8 @@ class Game {
         return false;
     }
 
-    
-
-    checkShoot(point) {//point = { x: 3, y: 5}
+    //check shoot to see if it is a hit or miss
+    checkShoot(point) {
         if (this.turn == Player.player1) {
             return this.isHit(point, this.player2Ships);
         }
@@ -71,6 +75,7 @@ class Game {
         }
     }
 
+    //get whoose turn it is
     whooseTurnItIs() {
         if (this.turn == Player.player1)
             return this.player1;
@@ -78,6 +83,7 @@ class Game {
             return this.player2;
     }
 
+    //change turn
     toggleTurn() {
         if (this.turn == Player.player1)
             this.turn = Player.player2;
@@ -85,6 +91,9 @@ class Game {
             this.turn = Player.player1;
     }
 
+    //check if any of the given ships are hit and return an object containg information:
+    //isHit - true if ship is hit, false if not
+    //isSunk - if false, the ship is hit but not sunk, if true the ship is sunk (all parts of the ship are hit)
     isHit(point, ships) {
         var i, j;
         for (i = 0; i < ships.length; i++) {
@@ -115,5 +124,3 @@ class Game {
 }
 
 module.exports = Game;
-//{ loc: { x: null, y: null }, hit: false }
-//var game = new Game(roomID, socketID, socketID, player1Ships, player2Ships);

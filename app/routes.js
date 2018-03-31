@@ -3,20 +3,12 @@ var User = require("./models/user");
 var bcrypt = require("bcrypt");
 const { check, validationResult } = require('express-validator/check');
 const { matchedData, sanitize } = require('express-validator/filter');
+var express = require('express');
+var router = express.Router();
 
-module.exports = function (jwt, router) {
-    var mongoose = require("mongoose");
-    console.log("vk" + process.env.MONGODB_CONN_STRING);
-    mongoose.connect(process.env.MONGODB_CONN_STRING || "mongodb://localhost/battleship");
-    var db = mongoose.connection;
+module.exports = function (jwt) {
 
-    db.on("error", function () {
-        console.log("connection error");
-    });
-    db.once("open", function () {
-        console.log("connection open!");
-    });
-
+    //register api route which validates and sanitizes http body elements
     router.post('/register', [
         check('email')
             .exists().withMessage("Email is required")
@@ -40,6 +32,7 @@ module.exports = function (jwt, router) {
 
     ], (req, res, next) => {
 
+        //in case there are vlidation errors send 422 and errors back to the client
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errors: errors.mapped() });
@@ -49,6 +42,7 @@ module.exports = function (jwt, router) {
         var username = req.body.username;
         var password = req.body.password;
 
+        //find the given user to check if the username is available
         User.findOne({ username: username }).exec(function (err, user) {
             if (err) {
                 var err = new Error("Internal server error");
@@ -58,6 +52,7 @@ module.exports = function (jwt, router) {
                 return res.status(401).json({ msg: "Username taken" });
             }
             else if (!user) {
+                //also check if email is avilable
                 User.findOne({ email: email }).exec(function (err, user) {
                     if (err) {
                         var err = new Error("Internal server error");
@@ -67,6 +62,7 @@ module.exports = function (jwt, router) {
                         return res.status(409).json({ msg: "Account associated with that email already exists" });
                     }
                     else if (!user) {
+                        //if the username and email are avilable then create the new user
                         var userData = {
                             email: email,
                             username: username,
@@ -76,7 +72,6 @@ module.exports = function (jwt, router) {
                         }
                         User.create(userData, function (err, user) {
                             if (err) {
-                                console.log(err)//logaj ovake errore
                                 var err = new Error("Internal server error");
                                 err.status = 500;
                                 return next(err);
@@ -91,6 +86,7 @@ module.exports = function (jwt, router) {
 
     });
 
+    //login api route which checks if the username and password are sent in the request
     router.post('/login', [
         check("username")
             .exists().withMessage("Username is required"),
@@ -100,7 +96,7 @@ module.exports = function (jwt, router) {
 
     ], (req, res, next) => {
 
-        console.log("login route accessed!!!")
+        //in case there are vlidation errors send 422 and errors back to the client
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errors: errors.mapped() });
@@ -109,22 +105,25 @@ module.exports = function (jwt, router) {
         var username = req.body.username;
         var password = req.body.password;
 
+        //find the user based on username
         User.findOne({ username: username }).exec(function (err, user) {
             if (err) {
                 var err = new Error("Internal server error");
                 err.status = 500;
                 return next(err);
             } else if (!user) {
-                //actually: no user with that username (wrong username)
+                //if there is no user with that username (wrong username)
                 return res.status(401).json({ msg: "Username or password wrong" });
             }
+            //if username exists then check the password
             bcrypt.compare(password, user.password, function (err, result) {
                 if (result === true) {
+                    //if password is correct, create the token and send it back to client
                     var data = { username: user.username, id: user._id };
                     var token = jwt.sign(data, "najvecatajnanasvijetu", { expiresIn: '1h' });
                     res.json({ token: token });
                 } else {
-                    //actually: wrong password
+                    //wrong password
                     return res.status(401).json({ msg: "Username or password wrong" });
                 }
             })

@@ -1,4 +1,6 @@
 app.controller('loginController', function ($scope, $http, Auth, $location) {
+
+    //submit login form, receive the token from the server and store it in local storage, set user in the auth service and redirect to lobby
     $scope.submit = function () {
         $http.post(API_URL + "/api/login", $scope.user).then(function (res) {
 
@@ -6,7 +8,6 @@ app.controller('loginController', function ($scope, $http, Auth, $location) {
             localStorage.setItem("token", token);
 
             var decoded = jwt_decode(token);
-            console.log(decoded);
             var user = decoded;
 
             Auth.setUser(user);

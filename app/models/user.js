@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 var bcrypt = require("bcrypt");
 var validator = require('validator');
 
+//mongoose user schema
 var UserSchema = new mongoose.Schema({
     email: {
         required: true,
@@ -34,6 +35,7 @@ var UserSchema = new mongoose.Schema({
     }
 });
 
+//hash the password before saving the user to the database
 UserSchema.pre('save', function (next) {
     var user = this;
     bcrypt.hash(user.password, 10, function (err, hash) {

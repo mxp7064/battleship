@@ -1,5 +1,6 @@
 app.controller('registerController', function ($scope, $http, Auth, $location) {
 
+    //submit register form - redirect to login
     $scope.submit = function () {
         $http.post(API_URL + "/api/register", $scope.user).then(function (res) {
             if (res.data.registerSuccessfull) {

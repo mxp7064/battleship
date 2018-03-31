@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
+//Mongoose game schema
 var GameSchema = new mongoose.Schema({
     winnerID: {
         type: String,

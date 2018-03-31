@@ -13,22 +13,24 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
     $scope.playerGamesUsername;
     $scope.loaderScoresFlag = false;
 
+    //initialize functions - set up socket and loggedin user from authentication service
     $scope.init = function () {
         $scope.loggedInUser = Auth.getUser();
 
-        if(Auth.getSocket() == null)
+        if (Auth.getSocket() == null)
             Auth.setSocket();
         $scope.socket = Auth.getSocket();
 
         $scope.socket.on('connect', function () {
-            //console.log('authenticated');
+
         }).on('disconnect', function () {
-            //console.log('disconnected');
+
         });
 
-        //USERS
+        //get online users request
         $scope.socket.emit("get users", "");
 
+        //handle get online users server response
         $scope.socket.on('users', function (users) {
             $scope.$apply(function () {
                 $scope.users = users;
@@ -36,7 +38,7 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
-        //ADD USER
+        //handle server push notification - add user
         $scope.socket.on('userAdded', function (user) {
             $scope.$apply(function () {
                 $scope.users.push(user);
@@ -44,7 +46,7 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
-        //REMOVE USER
+        //handle server push notification - user removed
         $scope.socket.on('userRemoved', function (socketID) {
             $scope.$apply(function () {
                 var index = $scope.users.findIndex(function (u) {
@@ -56,29 +58,27 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
-        //CHANGE STATUS
+        //handle server push notification - users status changed
         $scope.socket.on('usersStatusChanged', function (users) {
             $scope.$apply(function () {
-                for(var i = 0; i < users.length; i++)
-                {
+                for (var i = 0; i < users.length; i++) {
                     $scope.users[i].status = users[i].status;
                 }
             });
         });
 
-        //LEADERBOARD
+        //request leadrboard players from the server
         $scope.socket.emit("get leaderboard players", "");
 
+        //get leaderboard players
         $scope.socket.on('leaderboard players', function (docs) {
-            console.log(docs);
             $scope.$apply(function () {
                 $scope.leaderBoardPlayers = docs;
             });
         });
 
-        //PLAYER GAMES (WON AND LOST)
+        //get player won and lost games
         $scope.socket.on('player games', function (userGames) {
-            console.log(userGames);
             $scope.$apply(function () {
                 $scope.userWonGames = userGames.userWonGames;
                 $scope.userLostGames = userGames.userLostGames;
@@ -87,15 +87,16 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
-        //GET CHAT MESSAGES
+        //get chat messages
         $scope.socket.on('chat messages', function (messages) {
             $scope.$apply(function () {
                 $scope.messages = messages;
             });
-            
+
             $scope.scrollDown();
         });
 
+        //recieve chat message
         $scope.socket.on('chat message', function (message) {
             $scope.$apply(function () {
                 $scope.messages.push(message);
@@ -103,6 +104,7 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
+        //when this player has been challenged
         $scope.socket.on('you are challenged', function (user) {
             showSnackBar("snackbarChallenge");
 
@@ -111,8 +113,8 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
+        //handle challenge timeout
         $scope.socket.on('challenge timeout', function () {
-            console.log("challenge timeout");
             $scope.$apply(function () {
                 $(".challengeButton").css("display", "block");
                 $(".challengeButton").css("pointer-events", "auto");
@@ -125,11 +127,12 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
+        //challenged timeout
         $scope.socket.on('challenged timeout', function () {
-            console.log("challenged timeout");
             removeSnackBar("snackbarChallenge");
         });
 
+        //before the game starts set enemy player and save gameid in the auth service
         $scope.socket.on('game prestart', function (gameID, player1, player2) {
             var enemyPlayer = player1.userData.id == Auth.getUser().id ? player2.userData.username : player1.userData.username;
             Auth.setEnemyPlayer(enemyPlayer);
@@ -139,12 +142,13 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
+        //handle - player declined your challenge
         $scope.socket.on('declined your challenge', function (userWhoDeclined) {
             $scope.$apply(function () {
                 $(".challengeButton").css("display", "block");
                 $(".challengeButton").css("pointer-events", "auto");
                 $(".loader").css("display", "none");
-                
+
                 $scope.userWhoDeclined = userWhoDeclined;
                 showSnackBar("snackbarDeclined");
                 setTimeout(() => {
@@ -153,8 +157,11 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
+        //when server emits an error to the client
         $scope.socket.on("error", function (err) {
-            if (err.type === 'authentication_error') {
+            if (err.type == "internal_error") { alert("Something went wrong"); }
+
+            if (err.type == 'authentication_error') {
                 alert("You need to authenticate!");
                 localStorage.removeItem('token');
                 Auth.setUser(null);
@@ -165,18 +172,19 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
 
     $scope.init();
 
-    $scope.getPlayerGames = function(userID, username)
-    {
-        console.log(userID);
+    //get player's games
+    $scope.getPlayerGames = function (userID, username) {
         $scope.playerGamesUsername = username;
         $scope.socket.emit('get player games', userID);
         $scope.loaderScoresFlag = true;
     }
 
-    $scope.goBackToLeaderboard = function(){
+    //go back to leaderboard
+    $scope.goBackToLeaderboard = function () {
         $scope.showPlayerGamesFlag = false;
     }
 
+    //send chat message
     $scope.sendMessage = function () {
         if ($scope.messageToSend != "" && $scope.messageToSend != undefined) {
             var message = {
@@ -192,6 +200,7 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
         }
     }
 
+    //chalange a player
     $scope.challenge = function (user, $event) {
         $($event.currentTarget).css("display", "none");
         $(".challengeButton").css("pointer-events", "none");
@@ -211,17 +220,19 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
         $("#" + snack).removeClass("show");
     }
 
+    //accept challenge
     $scope.accept = function () {
         $scope.socket.emit('accept', $scope.userWhoChallenged);
-        //removeSnackBar("snackbarChallenge");
         $scope.loaderSnackFlag = true;
     }
 
+    //decline challenge
     $scope.decline = function () {
         $scope.socket.emit('decline', $scope.userWhoChallenged);
         removeSnackBar("snackbarChallenge");
     }
 
+    //scroll down the chat messages
     $scope.scrollDown = function () {
         var height = 0;
         $('#messages li').each(function (i, value) {

@@ -1,4 +1,5 @@
 
+//Ship class representing the Ship
 class Ship{
     constructor(name, coordinates)
     {
@@ -9,6 +10,7 @@ class Ship{
         this.isSunk = false;
     }
 
+    //increment hit count and set isSunk to true if all parts of the ship are hit
     makeAHit(){
         if(this.hits < this.length)
         {

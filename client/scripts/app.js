@@ -1,6 +1,8 @@
 var app = angular.module('myApp', ["ngRoute"]);
 
 app.config(function ($routeProvider, $locationProvider) {
+
+    //set up angular routes
     $routeProvider
         .when("/login", {
             templateUrl: "views/login.html",
@@ -29,6 +31,7 @@ app.config(function ($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix('');
 });
 
+//custom enter directive for the chat textarea
 app.directive('myEnter', function () {
     return function (scope, element, attrs) {
         element.bind("keydown keypress", function (event) {
@@ -42,6 +45,7 @@ app.directive('myEnter', function () {
     };
 });
 
+//restrict accesss to routes - if user is not logged in redirect back to login
 app.run(['$rootScope', '$location', 'Auth', function ($rootScope, $location, Auth) {
     $rootScope.$on('$routeChangeStart', function (event, next, current) {
 

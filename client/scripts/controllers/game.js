@@ -13,6 +13,7 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
     $scope.snackBarMessage;
     $scope.enemyPlayer;
 
+    //create player and targeting boards, initialize ships
     $scope.init = function () {
         createPlayerPanelBoard();
         createTargetingBoard();
@@ -27,14 +28,13 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         $scope.socket = s;
         $scope.gameID = Auth.getGameID();
         $scope.enemyPlayer = Auth.getEnemyPlayer();
+
+        //game start - show snack bar message and set turn
         $scope.socket.on('game start', function (whooseTurnItIs) {
             $scope.$apply(function () {
                 $scope.readyFlag = false;
-                //$scope.$apply(function () {
                 $scope.snackBarMessage = "The match has started! Good luck!";
                 showSnackBar();
-                //});
-
                 if (whooseTurnItIs == Auth.getUser().id) {
                     $scope.turn = true;
                     $scope.gameStatusMsg = "It's your turn! Select a tile on the targeting board!"
@@ -43,11 +43,10 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
                     $scope.turn = false;
                     $scope.gameStatusMsg = "Wait for the enemy's turn!"
                 }
-
-
             });
         });
 
+        //other player forfeited, redirect back to lobby
         $scope.socket.on('other player forfeited', function (username) {
             alert(username + " forfeited the game, you win!");
             $scope.$apply(function () {
@@ -55,11 +54,11 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
             });
         });
 
+        //handle shoot result
         $scope.socket.on('shoot result', function (shootResult, whooseTurnItIs, point) {
-            console.log(shootResult);
-            //red for "hit", white for "miss"
-            //sto ako user klikne 2 ili vise puta brzo (gadajuci na targeting panel a turn se jos nije promijenio)
-            if (whooseTurnItIs == Auth.getUser().id) {//kad si ti gado pa dobio result toga
+            
+            //if it's this player's turn
+            if (whooseTurnItIs == Auth.getUser().id) {
                 if (shootResult.isHit) {
                     markRedTargetingBoard(point);
                     explosionAnim(point.x * 50, point.y * 50, targetingPanel);
@@ -68,7 +67,6 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
                             $scope.snackBarMessage = "You sunk enemy's " + shootResult.shipName;
                         });
                         showSnackBar();
-                        //mozes ga revelat ako uspijes to napravit
                     }
                     else {
                         $scope.$apply(function () {
@@ -81,9 +79,8 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
                     $scope.$apply(function () {
                         $scope.snackBarMessage = "Miss";
                     });
-                    showSnackBar();//whie oznaci na targeting boardu
+                    showSnackBar();
                     markBlueTargetingBoard(point);
-                    //btw onemoguci da gada one koje je vec pogodio
                 }
                 $scope.$apply(function () {
                     $scope.turn = false;
@@ -91,7 +88,8 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
                 });
 
             }
-            else {//kad je tebe ovaj drugi gado pa si dobio result toga
+            //if this player's has been hit
+            else {
                 if (shootResult.isHit) {
                     explosionAnim(point.x * 50, point.y * 50, playerPanel);
                     markRedPlayerBoard(point);
@@ -123,13 +121,12 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
             }
         });
 
+        //if game is over and this player is the winner show appropriate message and redirect back to lobby
         $scope.socket.on('game end you win', function (data) {
-            console.log("you win");
             $scope.$apply(function () {
                 $scope.turn = false;
                 $scope.gameStatusMsg = "Congratulations, you won!";
                 $scope.snackBarMessage = "Congratulations, you won!";
-
             });
             showSnackBar();
             setTimeout(function () {
@@ -137,16 +134,14 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
                     $location.path("/lobby");
                 });
             }, 3000);
-
         });
 
+        //if game is over and this player lost, show appropriate message and redirect back to lobby
         $scope.socket.on('game end you lose', function (data) {
-            console.log("you lose");
             $scope.$apply(function () {
                 $scope.turn = false;
                 $scope.gameStatusMsg = "You lost!";
                 $scope.snackBarMessage = "You lost!";
-
             });
             showSnackBar();
             setTimeout(function () {
@@ -157,38 +152,41 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         });
     };
 
+    //show snackbar at the bottom of the screen
     function showSnackBar() {
         removeSnackBar();
         $("#snackBar").addClass("show");
         setTimeout(removeSnackBar, 3000);
     }
 
+    //remove snackbar
     function removeSnackBar() {
         $("#snackBar").removeClass("show");
     }
 
+    //make field on the targeting board red - when it's a hit
     function markRedTargetingBoard(point) {
         $("#targetingPanel .tile[data-x='" + point.x + "'][data-y='" + point.y + "']").addClass("tileHitRed");
     }
 
+    //make field on the targeting board - when it's a miss
     function markBlueTargetingBoard(point) {
         $("#targetingPanel .tile[data-x='" + point.x + "'][data-y='" + point.y + "']").addClass("tileMissBlue");
     }
 
-
+    //make field on the player board red - when this player has been hit
     function markRedPlayerBoard(point) {
         $("#playerPanel .tile[data-x='" + point.x + "'][data-y='" + point.y + "']").addClass("tileHitRed");
     }
 
+    //make field on the player board blue - when other player missed
     function markBluePlayerBoard(point) {
         $("#playerPanel .tile[data-x='" + point.x + "'][data-y='" + point.y + "']").addClass("tileMissBlue");
     }
 
-
-
-
     $scope.init();
 
+    //forfeit handler, ask player to confirm, if player confirms, redirect back to lobby
     $scope.forfeit = function () {
         if (confirm('Are you sure you want to forfeit the game?')) {
             $scope.socket.emit("forfeit", $scope.gameID, Auth.getUser());
@@ -196,9 +194,10 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         }
     }
 
+    //ready handler, send ship configuration to the server
     $scope.ready = function () {
         $scope.readyFlag = false;
-        $scope.socket.emit("ships", $scope.gameID, ships);
+        $scope.socket.emit("ships", $scope.gameID, ships, Auth.getUser().id);
         ships.forEach((ship) => {
             ship.rect.undrag();
             ship.rect.undblclick();
@@ -206,8 +205,7 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         $scope.gameStatusMsg = "Waiting for the other player to get ready!";
     }
 
-
-
+    //initialize ships
     function initShips() {
         var gridSize = 50;
         var orig = {
@@ -215,12 +213,14 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
             y: 0
         };
 
+        //make ship rectangles
         var carrierRect = playerPanel.image("images/carrier.png", 100, 150, 250, 50);
         var battleshipRect = playerPanel.image("images/battleship.png", 100, 250, 200, 50);
         var cruiserRect = playerPanel.image("images/cruiser.png", 100, 350, 150, 50);
         var submarineRect = playerPanel.image("images/submarine.png", 300, 350, 150, 50);
         var destroyerRect = playerPanel.image("images/destroyer.png", 350, 250, 100, 50);
 
+        //initialize ship objects
         var carrier = {
             name: "Carrier",
             rect: carrierRect,
@@ -266,18 +266,21 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
             ]
         };
 
+        //array holding all ships
         ships = [carrier, battleship, cruiser, submarine, destroyer];
 
+        //set ships
         setShips();
 
+        //add events to each ship
         ships.forEach((ship) => {
             var shipRect = ship.rect;
+
+            //add dobule click event on each ships - this toggles the direction of the ships between horizontal and vertical
             shipRect.dblclick(() => {
-
                 changeHorVer(ship);
-
                 if (checkCollisions(ship)) {
-                    changeHorVer(ship);//"roll back change by toggling again"
+                    changeHorVer(ship);
                 }
                 else {
                     if (ship.direction == "ver") {
@@ -289,6 +292,7 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
                 }
             });
 
+            //set ship rectangle attributes
             shipRect.attr({
                 fill: "#C0C0C0",
                 stroke: "black",
@@ -296,6 +300,7 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
                 class: "draggable"
             });
 
+            //add drag event which enables ships to be dragged around the board, also add restrictions
             shipRect.drag(
                 function (dx, dy, x, y, e) {
                     var xSnap = Snap.snapTo(gridSize, orig.x + dx, 100000000);
@@ -341,6 +346,7 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         });
     };
 
+    //set ships
     function setShips() {
         ships.forEach((ship) => {
             ship.top.x = ship.rect.attr("x") / 50;
@@ -350,6 +356,7 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         })
     }
 
+    //set ships coordinates based on the direction and thip top position
     function setShipCoordinates(ship) {
         if (ship.direction == "hor") {
             for (i = 0; i < ship.coordinates.length; i++) {
@@ -365,6 +372,7 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         }
     }
 
+    //toggle direction between horizontal and vertical
     function changeHorVer(ship) {
         if (ship.direction == "hor") {
             ship.direction = "ver";
@@ -379,10 +387,10 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
                 ship.coordinates[i].loc.x = (ship.top.x + i);
                 ship.coordinates[i].loc.y = ship.top.y;
             }
-
         }
     }
 
+    //check if there is a collision
     function checkCollisions(ship) {
         var flag = false;
         ship.coordinates.forEach((c) => {
@@ -393,6 +401,7 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         return flag;
     }
 
+    //check collision between point and ship
     function checkPointCollisions(point, sh) {
         for (i = 0; i < ships.length; i++) {
             if (ships[i].name != sh.name) {
@@ -407,14 +416,15 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         return false;
     }
 
+    //create svg element
     function createSVG(tag) {
         return document.createElementNS('http://www.w3.org/2000/svg', tag);
     }
 
+    //create player board
     function createPlayerPanelBoard() {
         for (i = 0; i < 11; i++) {
             for (j = 0; j < 11; j++) {
-
                 //this is for the letters on the left side
                 if (i == 0) {
                     var g = $(createSVG("g"));
@@ -442,10 +452,10 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         }
     }
 
+    //create targeting board
     function createTargetingBoard() {
         for (i = 0; i < 11; i++) {
             for (j = 0; j < 11; j++) {
-
                 //this is for the letters on the left side
                 if (i == 0) {
                     var g = $(createSVG("g"));
@@ -456,19 +466,17 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
                 }
                 else {
                     var tile = $(createSVG('rect')).attr('x', i * tileSize).attr('y', j * tileSize).attr("width", tileSize).attr("height", tileSize).attr("class", "tile tileData").attr("data-x", `${i}`).attr("data-y", `${j}`);
+                    //handle tile click event
                     tile.click(function () {
-                        //console.log(`[${$(this).attr("data-x")}, ${$(this).attr("data-y")}]`);
-                        if ($scope.turn) {
+                        if ($scope.turn && !$(this).hasClass('tileHitRed') && !$(this).hasClass('tileMissBlue')) {
                             var x50 = $(this).attr("x");
                             var y50 = $(this).attr("y");
-                            console.log(`[${x50}, ${y50}]`);
+
                             var x = x50 / 50;
                             var y = y50 / 50;
                             $scope.turn = false;
                             $scope.socket.emit("shoot", $scope.gameID, { x: x, y: y });
-                            //explosionAnim(x, y, targetingPanel);
                         }
-
                     });
                     tile.appendTo($('#targetingPanel'));
                 }
@@ -481,11 +489,11 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
                         $(createSVG('text')).attr('x', i * tileSize + tileSize / 2).attr('y', j * tileSize + tileSize / 2).attr("class", "textTile").attr("text-anchor", "middle").attr("alignment-baseline", "middle").text(i).appendTo(g);
                     g.appendTo($('#targetingPanel'));
                 }
-
             }
         }
     }
 
+    //show explosion svg animation on a given point and panel
     function explosionAnim(x, y, panel) {
 
         var g = panel.g();
@@ -512,6 +520,7 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
         setTimeout(() => { g.remove(); }, 2100);
     }
 
+    //helper functions
     function halfChance() {
         return Math.random() < 0.5 ? -1 : 1;
     }
@@ -523,7 +532,4 @@ app.controller('gameController', function ($scope, $http, Auth, $location, $wind
     function getRandomArbitrary(min, max) {
         return Math.random() * (max - min) + min;
     }
-
-
-
 });
