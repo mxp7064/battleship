@@ -51,17 +51,19 @@ module.exports = function (io, jwt) {
             socket.broadcast.emit('userRemoved', socket.id);
         });
 
-        //send stored chat messages to the client when the client connects in the lobby so the user can see old chat messages
-        Message.find({}, function (err, messages) {
-            if (err) {
-                var err = new Error('Internal server error');
-                err.type = 'internal_error';
-                io.emit('error', err);
-            }
-
-            socket.emit("chat messages", messages);
-        });
-
+        //send stored chat messages to the client when the client connects in the lobby so the user can see previous chat messages
+        socket.on('get chat messages', function () {
+            Message.find({}, function (err, messages) {
+                if (err) {
+                    var err = new Error('Internal server error');
+                    err.type = 'internal_error';
+                    io.emit('error', err);
+                }
+    
+                socket.emit("chat messages", messages);
+            });
+         });
+        
         //send list of users to the client
         socket.on('get users', function () {
             socket.emit("users", users);

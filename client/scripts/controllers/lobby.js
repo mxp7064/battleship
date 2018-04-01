@@ -87,7 +87,10 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             });
         });
 
-        //get chat messages
+        //request previous chat messags from the server
+        $scope.socket.emit("get chat messages", "");
+
+        //receive prevopis chat messages
         $scope.socket.on('chat messages', function (messages) {
             $scope.$apply(function () {
                 $scope.messages = messages;
@@ -96,7 +99,7 @@ app.controller('lobbyController', function ($scope, $http, Auth, $location, $win
             $scope.scrollDown();
         });
 
-        //recieve chat message
+        //receive chat message
         $scope.socket.on('chat message', function (message) {
             $scope.$apply(function () {
                 $scope.messages.push(message);

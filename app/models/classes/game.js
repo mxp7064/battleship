@@ -103,7 +103,7 @@ class Game {
                     if (c.hit == false) {
                         c.hit = true;
                         ships[i].makeAHit();
-                        this.whooseTurnItIs() == this.player1 ? this.player1Hits++ : this.player2Hits;
+                        this.whooseTurnItIs() == this.player1 ? this.player1Hits++ : this.player2Hits++;
                         if (ships[i].isSunk) {
                             return { isHit: true, isSunk: true, shipName: ships[i].name };
                         }
